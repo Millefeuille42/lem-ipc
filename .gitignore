@@ -1,0 +1,5 @@
+.idea
+.deps
+.objs
+lemipc
+cmake-build-debug
