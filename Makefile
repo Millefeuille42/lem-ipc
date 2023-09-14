@@ -1,21 +1,38 @@
-.DEFAULT_GOAL := help
+.DEFAULT_GOAL := all
 
 ######### Sources #########
 
-SOURCES	=	cmd/main.c\
-         	pkg/ft_print/ft_putchar.c\
-         	pkg/ft_print/ft_putstr.c\
-         	pkg/ft_print/ft_putnbr_base_padded.c\
-         	pkg/ft_print/ft_putnbr_base.c\
-         	pkg/ft_print/ft_putnbr.c\
-         	pkg/ft_error/panic.c\
-         	pkg/ft_error/log_error.c\
+LIB_MLX_DIR = pkg/minilibx-linux
+LIB_MLX = $(LIB_MLX_DIR)/libmlx.a
+
+SOURCES	=			pkg/ft_print/ft_putchar.c\
+            		pkg/ft_print/ft_putstr.c\
+            		pkg/ft_print/ft_putnbr_base_padded.c\
+            		pkg/ft_print/ft_putnbr_base.c\
+            		pkg/ft_print/ft_putnbr.c\
+            		pkg/ft_error/panic.c\
+            		pkg/ft_error/log_error.c\
+            		pkg/ft_memory/zeroed_malloc.c\
+            		pkg/ft_memory/ft_bzero.c\
+            		pkg/ft_memory/del_array.c\
+            		pkg/ft_memory/safe_free.c\
+            		cmd/main.c\
+            		cmd/ui.c\
+            		cmd/utils.c\
 
 HEADERS	=	pkg/ft_error/ft_error.h\
 			pkg/ft_print/ft_print.h\
+			pkg/ft_print/ft_memory.h\
+			pkg/minilibx-linux/mlx.h\
+			cmd/main.h\
 
-HEADERS_DIRECTORIES	=	pkg/ft_error/ \
+HEADERS_DIRECTORIES	=	cmd/ \
+                        pkg/ft_error/ \
                         pkg/ft_print/ \
+                        pkg/ft_memory/ \
+                        $(LIB_MLX_DIR) \
+
+INCLUDES =	$(addprefix -I, $(HEADERS_DIRECTORIES))
 
 ######### Details #########
 
@@ -24,10 +41,13 @@ SOURCES_EXTENSION = c
 
 ######### Compilation #########
 
-COMPILE		=	clang
+COMPILE		=	gcc
 DELETE		=	rm -f
 
-FLAGS		=	-Wall -Werror -Wextra -pedantic
+MAKE_LIB_MLX = make -C $(LIB_MLX_DIR)
+
+FLAGS		= -Wall -Werror -Wextra -pedantic $(INCLUDES)
+LINK_FLAGS  = -L$(LIB_MLX_DIR) -lmlx -lX11 -lXext
 
 ######### Additional Paths #########
 
@@ -52,14 +72,22 @@ DEPS	=	$(addprefix $(DEPS_DIR), $(SOURCES:.$(SOURCES_EXTENSION)=.d))
 
 #########  Rules  #########
 
-all:	$(OBJS_DIR) $(DEPS_DIR) $(NAME) ## Compile project and dependencies
+all:	$(LIB_MLX) $(OBJS_DIR) $(DEPS_DIR) $(NAME) ## Compile project and dependencies
+
+$(LIB_MLX):
+	@printf "Compiling mlx\n"
+	@$(MAKE_LIB_MLX) > /dev/null
 
 $(NAME):	$(OBJS) ## Compile project
-			$(COMPILE) $(FLAGS) $^ -o $@
+			@printf "Linking %s\n" $@
+			@$(COMPILE) $(FLAGS) $^ $(LINK_FLAGS) -o $@
 
 clean: clean_deps clean_objs ## Delete object files
 
-fclean:	clean clean_bin ## Delete object files and binary
+fclean:	clean clean_bin mlx_clean ## Delete object files and binary
+
+mlx_clean:
+	@$(MAKE_LIB_MLX) clean > /dev/null
 
 re:	fclean ## Delete object files and binary, then recompile all
 			@make --no-print-directory all
@@ -88,7 +116,8 @@ $(DEPS_DIR):
 $(OBJS_DIR)%.o:	%.$(SOURCES_EXTENSION)
 			@mkdir -p $(OBJS_DIR)$(dir $<)
 			@mkdir -p $(DEPS_DIR)$(dir $<)
-			$(COMPILE) $(FLAGS) -MMD -MP -MF $(DEPS_DIR)$*.d -c $< -o $@
+			@printf "Compiling %s\n" $^
+			@$(COMPILE) $(FLAGS) -MMD -MP -MF $(DEPS_DIR)$*.d -c $< -o $@
 
 .PHONY:	all clean fclean re help
 

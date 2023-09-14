@@ -8,7 +8,7 @@ void ft_putstr(const char *str) {
 	if (!str)
 		return;
 	size_t len = 0;
-    for (; str[len]; len++);
+    for (; str[len]; len++) {}
 	write(1, str, len);
 }
 
