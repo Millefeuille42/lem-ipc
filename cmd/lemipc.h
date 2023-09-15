@@ -44,6 +44,10 @@
 # define BOARD_Y 50
 #endif
 
+#ifndef TICK_RATE
+# define TICK_RATE 200
+#endif
+
 extern sem_t *stop_sem;
 
 typedef struct s_shared {

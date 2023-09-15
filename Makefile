@@ -58,7 +58,11 @@ DELETE		=	rm -f
 
 MAKE_LIB_MLX = make -C $(LIB_MLX_DIR)
 
-FLAGS		= -Wall -Werror -Wextra -pedantic $(INCLUDES)
+ifdef TICK_RATE
+	TICK_RATE_DEFINE := -DTICK_RATE=$(TICK_RATE)
+endif
+
+FLAGS		= -Wall -Werror -Wextra -pedantic $(INCLUDES) $(TICK_RATE_DEFINE)
 LINK_FLAGS  = -L$(LIB_MLX_DIR) -lmlx -lX11 -lXext
 
 ######### Additional Paths #########

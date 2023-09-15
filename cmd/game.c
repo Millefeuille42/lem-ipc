@@ -38,5 +38,6 @@ int game_loop(t_app *app) {
 	// TODO do game stuff
 	//  if player loses, return `non 0`
 	sem_post(&app->shared->lock);
+	usleep(TICK_RATE * 1000);
 	return 0;
 }
