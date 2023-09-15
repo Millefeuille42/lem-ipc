@@ -48,6 +48,7 @@ extern sem_t *stop_sem;
 typedef struct s_shared {
 	int shm_id;
 	int has_ui;
+	t_color color_offsets;
 	sem_t lock;
 	char map[BOARD_Y][BOARD_X];
 } t_shared;

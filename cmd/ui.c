@@ -27,16 +27,13 @@ inline static void draw_square(t_vec position, t_img *img, t_color *const color)
 	}
 }
 
-inline static void hash_number(int number, t_color *color) {
-	static unsigned char r = 0;
-	if (!r) r = rand() % 255;
-	static unsigned char g = 0;
-	if (!g) g = rand() % 255;
-	static unsigned char b = 0;
-	if (!b) b = rand() % 255;
-	color->r = number * r % 255;
-	color->g = number * g % 255;
-	color->b = number * b % 255;
+inline static void hash_number(int number, t_color *color, t_color *offset) {
+	if (!offset->r) offset->r = rand() % 255;
+	if (!offset->g) offset->g = rand() % 255;
+	if (!offset->b) offset->b = rand() % 255;
+	color->r = number * offset->r % 255;
+	color->g = number * offset->g % 255;
+	color->b = number * offset->b % 255;
 }
 
 inline static void draw_board(t_app *app) {
@@ -45,7 +42,7 @@ inline static void draw_board(t_app *app) {
 		int i2;
 		for (i2 = 0; i2 < BOARD_X; i2++) {
 			t_color color;
-			hash_number(app->shared->map[i][i2], &color);
+			hash_number(app->shared->map[i][i2], &color, &app->shared->color_offsets);
 			draw_square((t_vec){i2, i}, &app->img, &color);
 		}
 	}
