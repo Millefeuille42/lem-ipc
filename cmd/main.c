@@ -113,15 +113,38 @@ inline static void loop(t_app *app) {
 	}
 }
 
-int main(void) {
+unsigned int bj2_hash(char *team) {
+	unsigned int hash = 0x811c9dc5;
+	unsigned int prime = 0x1000193;
+
+	for (size_t i = 0; i < ft_strlen(team); ++i) {
+		unsigned char value = team[i];
+		hash = hash ^ value;
+		hash *= prime;
+	}
+	return hash + 1;
+}
+
+int main(int argc, char *argv[]) {
 	// TODO add game elements
 	// TODO create game loop
+
+	if (argc < 2) {
+		ft_fputstr("usage: lemipc <team name>\n", 2);
+		return EINVAL;
+	}
+
+	if (ft_strlen(argv[1]) > 16) {
+		ft_fputstr("team name has to be 16 characters max\n", 2);
+		return EINVAL;
+	}
 
 	errno = 0;
 	srandom(time(NULL));
 	if (errno) panic("srand");
 
 	t_app app = {0};
+	app.team = bj2_hash(argv[1]);
 	int is_first = init_shared(&app);
 	if (errno) {
 		if (is_first) remove(KEY_FILE);

@@ -27,7 +27,7 @@ inline static void draw_square(t_vec position, t_img *img, t_color *const color)
 	}
 }
 
-inline static void hash_number(int number, t_color *color, t_color *offset) {
+inline static void hash_number(unsigned int number, t_color *color, t_color *offset) {
 	if (!offset->r) offset->r = random() % 255;
 	if (!offset->g) offset->g = random() % 255;
 	if (!offset->b) offset->b = random() % 255;

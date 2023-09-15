@@ -16,6 +16,7 @@
 #include <sys/stat.h>
 #include <sys/shm.h>
 #include <ft_error.h>
+#include <ft_string.h>
 
 #include "ui.h"
 
@@ -50,7 +51,7 @@ typedef struct s_shared {
 	int has_ui;
 	t_color color_offsets;
 	sem_t lock;
-	char map[BOARD_Y][BOARD_X];
+	unsigned int map[BOARD_Y][BOARD_X];
 } t_shared;
 
 typedef struct s_app {
@@ -58,6 +59,7 @@ typedef struct s_app {
 	void *window;
 	t_shared *shared;
 	int has_spawned;
+	unsigned int team;
 	t_vec cur_pos;
 	sem_t stop_sem;
 	t_img img;

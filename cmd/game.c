@@ -4,7 +4,7 @@
 
 #include "lemipc.h"
 
-t_vec get_first_free(char map[BOARD_Y][BOARD_X]) {
+t_vec get_first_free(unsigned int map[BOARD_Y][BOARD_X]) {
 	int y;
 	for (y = 0; y < BOARD_Y; y++) {
 		int x;
@@ -31,7 +31,7 @@ int game_loop(t_app *app) {
 			return 0;
 		}
 		printf("registered position %d,%d\n", first_free.x, first_free.y);
-		app->shared->map[first_free.y][first_free.x] = 1;
+		app->shared->map[first_free.y][first_free.x] = app->team;
 		app->cur_pos = first_free;
 		app->has_spawned = 1;
 	}

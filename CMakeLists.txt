@@ -8,6 +8,8 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Werror -Wextra -pedantic"
 include_directories(./pkg/minilibx-linux)
 include_directories(./pkg/ft_error)
 include_directories(./pkg/ft_print)
+include_directories(./pkg/ft_string)
+include_directories(./pkg/ft_memory)
 
 set(SOURCE_LEM_IPC
 		pkg/ft_print/ft_putchar.c
@@ -20,6 +22,24 @@ set(SOURCE_LEM_IPC
 		pkg/ft_error/panic.c
 		pkg/ft_error/log_error.c
 		pkg/ft_error/ft_error.h
+
+		pkg/ft_memory/zeroed_malloc.c
+        pkg/ft_memory/ft_bzero.c
+        pkg/ft_memory/del_array.c
+        pkg/ft_memory/safe_free.c
+		pkg/ft_memory/ft_memory.h
+
+		pkg/ft_string/ft_string_copy.c
+		pkg/ft_string/ft_string_concat.c
+		pkg/ft_string/get_after_n_sep.c
+		pkg/ft_string/ft_strcmp.c
+		pkg/ft_string/ft_to_lower.c
+		pkg/ft_string/ft_strlen.c
+		pkg/ft_string/ft_is_alnum.c
+		pkg/ft_string/ft_split.c
+		pkg/ft_string/ft_is_alpha.c
+		pkg/ft_string/string.c
+		pkg/ft_string/ft_string.h
 
 		pkg/minilibx-linux/mlx.h
 

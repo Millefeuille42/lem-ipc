@@ -10,6 +10,20 @@ SOURCES	=			pkg/ft_print/ft_putchar.c\
             		pkg/ft_print/ft_putnbr.c\
             		pkg/ft_error/panic.c\
             		pkg/ft_error/log_error.c\
+            		pkg/ft_string/ft_string_copy.c\
+                    pkg/ft_string/ft_string_concat.c\
+                    pkg/ft_string/get_after_n_sep.c\
+                    pkg/ft_string/ft_strcmp.c\
+                    pkg/ft_string/ft_to_lower.c\
+                    pkg/ft_string/ft_strlen.c\
+                    pkg/ft_string/ft_is_alnum.c\
+                    pkg/ft_string/ft_split.c\
+                    pkg/ft_string/ft_is_alpha.c\
+                    pkg/ft_string/string.c\
+                    pkg/ft_memory/zeroed_malloc.c\
+                    pkg/ft_memory/ft_bzero.c\
+                    pkg/ft_memory/del_array.c\
+                    pkg/ft_memory/safe_free.c\
             		cmd/main.c\
             		cmd/ui.c\
             		cmd/signals.c\
@@ -18,7 +32,8 @@ SOURCES	=			pkg/ft_print/ft_putchar.c\
 
 HEADERS	=	pkg/ft_error/ft_error.h\
 			pkg/ft_print/ft_print.h\
-			pkg/ft_print/ft_memory.h\
+            pkg/ft_string/ft_string.h\
+            pkg/ft_memory/ft_memory.h\
 			pkg/minilibx-linux/mlx.h\
 			cmd/main.h\
 
@@ -26,6 +41,7 @@ HEADERS_DIRECTORIES	=	cmd/ \
                         pkg/ft_error/ \
                         pkg/ft_print/ \
                         pkg/ft_memory/ \
+                        pkg/ft_string/ \
                         $(LIB_MLX_DIR) \
 
 INCLUDES =	$(addprefix -I, $(HEADERS_DIRECTORIES))
