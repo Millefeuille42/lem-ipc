@@ -3,3 +3,4 @@
 .objs
 lemipc
 cmake-build-debug
+cmake-build-debug-coverage
