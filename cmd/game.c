@@ -43,7 +43,7 @@ void move_to(t_player *player, t_vec *const to, MAP) {
 	player->cur_pos = *to;
 }
 
-// FIXME Could be improved (like bookkeeping per team num of players ?)
+// TODO Could be improved (like bookkeeping per team num of players ?)
 size_t get_board_info(t_player *player, t_vec *closest_enemy, MAP) {
 	size_t count = 0;
 	unsigned int min_dist = BOARD_X + BOARD_Y + 1;
@@ -106,6 +106,9 @@ void idle_behavior(t_app *app) {
 	errno = 0;
 }
 
+// TODO improve behavior
+//  communicate prey with others
+//  try other axis if movement is unavailable
 void hunt_behavior(t_app *app) {
 	unsigned int prey_value = app->shared->map[app->player.prey.y][app->player.prey.x];
 	if (!prey_value || prey_value == app->player.team) {
