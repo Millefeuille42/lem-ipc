@@ -55,6 +55,12 @@ void close_lock(sem_t *lock) {
 }
 
 int quit(t_app *app) {
+	if (app->has_spawned) {
+		sem_wait(&app->shared->lock);
+		printf("unregistered\n");
+		app->shared->map[app->cur_pos.y][app->cur_pos.x] = 0;
+		sem_post(&app->shared->lock);
+	}
 	if (app->window) mlx_destroy_window(app->mlx, app->window);
 	if (app->img.v_img) mlx_destroy_image(app->mlx, app->img.v_img);
 	if (app->mlx) {

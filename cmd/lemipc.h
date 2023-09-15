@@ -55,9 +55,11 @@ typedef struct s_shared {
 typedef struct s_app {
 	void *mlx;
 	void *window;
-	t_img img;
 	t_shared *shared;
+	int has_spawned;
+	t_vec cur_pos;
 	sem_t stop_sem;
+	t_img img;
 } t_app;
 
 void ui_start(t_app *app);
