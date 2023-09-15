@@ -58,11 +58,33 @@ DELETE		=	rm -f
 
 MAKE_LIB_MLX = make -C $(LIB_MLX_DIR)
 
+DEFINES =
+
 ifdef TICK_RATE
-	TICK_RATE_DEFINE := -DTICK_RATE=$(TICK_RATE)
+	DEFINES +=  -DTICK_RATE=$(TICK_RATE)
 endif
 
-FLAGS		= -Wall -Werror -Wextra -pedantic $(INCLUDES) $(TICK_RATE_DEFINE)
+ifdef BOARD_X
+	DEFINES +=  -DBOARD_X=$(BOARD_X)
+endif
+
+ifdef BOARD_Y
+	DEFINES +=  -DBOARD_Y=$(BOARD_Y)
+endif
+
+ifdef SCREEN_X
+	DEFINES +=  -DSCREEN_X=$(SCREEN_X)
+endif
+
+ifdef SCREEN_Y
+	DEFINES +=  -DSCREEN_Y=$(SCREEN_Y)
+endif
+
+ifdef RANDOM_SPAWN
+	DEFINES +=  -DRANDOM_SPAWN=1
+endif
+
+FLAGS		= -Wall -Werror -Wextra -pedantic $(INCLUDES) $(DEFINES)
 LINK_FLAGS  = -L$(LIB_MLX_DIR) -lmlx -lX11 -lXext
 
 ######### Additional Paths #########

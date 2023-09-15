@@ -96,6 +96,18 @@ inline static void log_and_quit(t_app *app, char *message) {
 	quit(app);
 }
 
+inline static unsigned int bj2_hash(char *team) {
+	unsigned int hash = 0x811c9dc5;
+	unsigned int prime = 0x1000193;
+
+	for (size_t i = 0; i < ft_strlen(team); ++i) {
+		unsigned char value = team[i];
+		hash = hash ^ value;
+		hash *= prime;
+	}
+	return hash + 1;
+}
+
 inline static void loop(t_app *app) {
 	while (1) {
 		sem_trywait(&app->stop_sem);
@@ -113,16 +125,19 @@ inline static void loop(t_app *app) {
 	}
 }
 
-unsigned int bj2_hash(char *team) {
-	unsigned int hash = 0x811c9dc5;
-	unsigned int prime = 0x1000193;
-
-	for (size_t i = 0; i < ft_strlen(team); ++i) {
-		unsigned char value = team[i];
-		hash = hash ^ value;
-		hash *= prime;
-	}
-	return hash + 1;
+void print_opts(void) {
+	printf("BOARD_X:       %d\n", BOARD_X);
+	printf("BOARD_Y:       %d\n", BOARD_Y);
+	printf("SCREEN_X:      %d\n", SCREEN_X);
+	printf("SCREEN_Y:      %d\n", SCREEN_Y);
+	printf("TICK_RATE:     %d\n", TICK_RATE);
+	printf("OBSERVER_TEAM: %s\n", OBSERVER_TEAM);
+#ifdef RANDOM_SPAWN
+	printf("SPAWN_TYPE:    RANDOM\n");
+#else
+	printf("SPAWN_TYPE:    LINEAR\n");
+#endif
+	exit(0);
 }
 
 int main(int argc, char *argv[]) {
@@ -130,6 +145,8 @@ int main(int argc, char *argv[]) {
 		ft_fputstr("usage: lemipc <team name>\n", 2);
 		return EINVAL;
 	}
+
+	if (bj2_hash("--opts") == bj2_hash(argv[1])) print_opts();
 
 	if (ft_strlen(argv[1]) > 16) {
 		ft_fputstr("team name has to be 16 characters max\n", 2);
