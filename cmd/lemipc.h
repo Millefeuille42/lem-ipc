@@ -62,7 +62,9 @@ typedef struct s_shared {
 
 typedef struct s_player {
 	int has_spawned;
+	int has_prey;
 	unsigned int team;
+	t_vec prey;
 	t_vec cur_pos;
 } t_player;
 

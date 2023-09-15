@@ -126,9 +126,6 @@ unsigned int bj2_hash(char *team) {
 }
 
 int main(int argc, char *argv[]) {
-	// TODO add game elements
-	// TODO create game loop
-
 	if (argc < 2) {
 		ft_fputstr("usage: lemipc <team name>\n", 2);
 		return EINVAL;

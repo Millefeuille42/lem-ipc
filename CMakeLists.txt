@@ -50,6 +50,7 @@ set(SOURCE_LEM_IPC
 		cmd/game.c
 		cmd/ui.h
 		cmd/lemipc.h
+		cmd/game.h
 )
 
 add_executable(lemipc ${SOURCE_LEM_IPC})
