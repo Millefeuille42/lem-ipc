@@ -159,6 +159,10 @@ int is_surrounded(t_player *player, MAP) {
 
 int game_loop(t_app *app) {
 	errno = 0;
+	if (app->observer_team == app->player.team) {
+		usleep(TICK_RATE * 1000);
+		return 0;
+	}
 	sem_wait(&app->shared->lock);
 	if (errno) {
 		sem_post(&app->shared->lock);

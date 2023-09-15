@@ -142,6 +142,7 @@ int main(int argc, char *argv[]) {
 
 	t_app app = {0};
 	app.player.team = bj2_hash(argv[1]);
+	app.observer_team = bj2_hash(OBSERVER_TEAM);
 	int is_first = init_shared(&app);
 	if (errno) {
 		if (is_first) remove(KEY_FILE);

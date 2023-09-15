@@ -48,6 +48,10 @@
 # define TICK_RATE 200
 #endif
 
+#ifndef OBSERVER_TEAM
+# define OBSERVER_TEAM "observer"
+#endif
+
 #define MAP unsigned int map[BOARD_Y][BOARD_X]
 
 extern sem_t *stop_sem;
@@ -72,6 +76,7 @@ typedef struct s_app {
 	void *mlx;
 	void *window;
 	t_shared *shared;
+	unsigned int observer_team;
 	t_player player;
 	sem_t stop_sem;
 	t_img img;
