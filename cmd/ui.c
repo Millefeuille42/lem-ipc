@@ -5,7 +5,7 @@
 #include "lemipc.h"
 
 inline static void image_pixel_put(const t_vec position, t_img *img, t_color *const color) {
-	if (position.x > SCREEN_X || position.x < 0 || position.y > SCREEN_Y || position.y < 0)
+	if (position.x > SCREEN_X || position.y > SCREEN_Y)
 		return;
 	img->c_img[position.y * img->sl + position.x * (img->bpp / 8)] = (char)color->b;
 	img->c_img[position.y * img->sl + position.x * (img->bpp / 8) + 1] = (char)color->g;
@@ -13,14 +13,12 @@ inline static void image_pixel_put(const t_vec position, t_img *img, t_color *co
 }
 
 inline static void draw_square(t_vec position, t_img *img, t_color *const color) {
-	int	i;
-	for (i = 0; i < SCREEN_Y / BOARD_Y + 1; i++) {
-		int i2;
-		for (i2 = 0; i2 < (SCREEN_X / BOARD_X) + 1; i2++) {
+	for (unsigned long y = 0; y < SCREEN_Y / BOARD_Y + 1; y++) {
+		for (unsigned long x = 0; x < (SCREEN_X / BOARD_X) + 1; x++) {
 			image_pixel_put(
 					(t_vec){
-							position.x * SCREEN_X / BOARD_X + i2,
-							position.y * SCREEN_Y / BOARD_Y + i
+							position.x * SCREEN_X / BOARD_X + x,
+							position.y * SCREEN_Y / BOARD_Y + y
 					}, img, color
 			);
 		}
@@ -37,13 +35,11 @@ inline static void hash_number(unsigned int number, t_color *color, t_color *off
 }
 
 inline static void draw_board(t_app *app) {
-	int i;
-	for (i = 0; i < BOARD_Y; i++) {
-		int i2;
-		for (i2 = 0; i2 < BOARD_X; i2++) {
+	for (unsigned long y = 0; y < BOARD_Y; y++) {
+		for (unsigned long x = 0; x < BOARD_X; x++) {
 			t_color color;
-			hash_number(app->shared->map[i][i2], &color, &app->shared->color_offsets);
-			draw_square((t_vec){i2, i}, &app->img, &color);
+			hash_number(app->shared->map[y][x], &color, &app->shared->color_offsets);
+			draw_square((t_vec){x, y}, &app->img, &color);
 		}
 	}
 }

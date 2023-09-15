@@ -9,8 +9,8 @@
 # include <X11/X.h>
 
 typedef struct s_vec {
-	int x;
-	int y;
+	unsigned int x;
+	unsigned int y;
 } t_vec;
 
 typedef struct s_img {
