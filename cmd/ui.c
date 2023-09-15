@@ -49,6 +49,8 @@ inline static void draw_board(t_app *app) {
 }
 
 inline static int ui_loop(t_app *app) {
+	int ret = game_loop(app);
+	if (errno) log_error("game_loop");
 	if (!app->img.v_img) return 1;
 	draw_board(app);
 	mlx_put_image_to_window(app->mlx, app->window, app->img.v_img, 0, 0);
@@ -56,8 +58,6 @@ inline static int ui_loop(t_app *app) {
 	sem_trywait(&app->stop_sem);
 	if (!errno || errno == EINTR) quit(app);
 	else if (errno && errno != EAGAIN) log_error("sem");
-	int ret = game_loop(app);
-	if (errno) log_error("game_loop");
 	if (ret) quit(app);
 	return 0;
 }
