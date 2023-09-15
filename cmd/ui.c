@@ -48,7 +48,9 @@ inline static int ui_loop(t_app *app) {
 	int ret = game_loop(app);
 	if (errno) log_error("game_loop");
 	if (!app->img.v_img) return 1;
+	sem_wait(&app->shared->lock);
 	draw_board(app);
+	sem_post(&app->shared->lock);
 	mlx_put_image_to_window(app->mlx, app->window, app->img.v_img, 0, 0);
 	errno = 0;
 	sem_trywait(&app->stop_sem);
