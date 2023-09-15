@@ -55,10 +55,10 @@ void close_lock(sem_t *lock) {
 }
 
 int quit(t_app *app) {
-	if (app->has_spawned) {
+	if (app->player.has_spawned) {
 		sem_wait(&app->shared->lock);
 		printf("unregistered\n");
-		app->shared->map[app->cur_pos.y][app->cur_pos.x] = 0;
+		app->shared->map[app->player.cur_pos.y][app->player.cur_pos.x] = 0;
 		sem_post(&app->shared->lock);
 	}
 	if (app->window) mlx_destroy_window(app->mlx, app->window);
@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
 	if (errno) panic("srand");
 
 	t_app app = {0};
-	app.team = bj2_hash(argv[1]);
+	app.player.team = bj2_hash(argv[1]);
 	int is_first = init_shared(&app);
 	if (errno) {
 		if (is_first) remove(KEY_FILE);

@@ -4,7 +4,7 @@
 
 #include "lemipc.h"
 
-t_vec get_first_free(unsigned int map[BOARD_Y][BOARD_X]) {
+t_vec get_first_free(MAP) {
 	int y;
 	for (y = 0; y < BOARD_Y; y++) {
 		int x;
@@ -15,19 +15,19 @@ t_vec get_first_free(unsigned int map[BOARD_Y][BOARD_X]) {
 	return (t_vec){-1, -1};
 }
 
-void move_to(t_app *app, t_vec to) {
+void move_to(t_player *player, t_vec to, MAP) {
 	if (to.x < 0 || to.y < 0 || to.x >= BOARD_X || to.y >= BOARD_Y) return;
-	int offset = app->cur_pos.x - to.x;
+	int offset = player->cur_pos.x - to.x;
 	offset = offset >= 0 ? offset : offset * -1;
 	if (offset > 1) return;
-	offset = app->cur_pos.y - to.y;
+	offset = player->cur_pos.y - to.y;
 	offset = offset >= 0 ? offset : offset * -1;
 	if (offset > 1) return;
 
-	if (app->shared->map[to.y][to.x]) return;
-	app->shared->map[app->cur_pos.y][app->cur_pos.x] = 0;
-	app->shared->map[to.y][to.x] = app->team;
-	app->cur_pos = to;
+	if (map[to.y][to.x]) return;
+	map[player->cur_pos.y][player->cur_pos.x] = 0;
+	map[to.y][to.x] = player->team;
+	player->cur_pos = to;
 }
 
 int game_loop(t_app *app) {
@@ -37,7 +37,7 @@ int game_loop(t_app *app) {
 		sem_post(&app->shared->lock);
 		return errno;
 	}
-	if (!app->has_spawned) {
+	if (!app->player.has_spawned) {
 		printf("has not spawned\n");
 		t_vec first_free = get_first_free(app->shared->map);
 		if (first_free.x < 0) {
@@ -46,18 +46,22 @@ int game_loop(t_app *app) {
 			return 0;
 		}
 		printf("registered position %d,%d\n", first_free.x, first_free.y);
-		app->shared->map[first_free.y][first_free.x] = app->team;
-		app->cur_pos = first_free;
-		app->has_spawned = 1;
+		app->shared->map[first_free.y][first_free.x] = app->player.team;
+		app->player.cur_pos = first_free;
+		app->player.has_spawned = 1;
 	}
 
 	// Idle movement
 	char next_move = (char)(random() % 4);
 	switch (next_move) {
-		case 0: move_to(app, (t_vec){app->cur_pos.x - 1, app->cur_pos.y}); break;
-		case 1: move_to(app, (t_vec){app->cur_pos.x + 1, app->cur_pos.y}); break;
-		case 2: move_to(app, (t_vec){app->cur_pos.x, app->cur_pos.y - 1}); break;
-		case 3: move_to(app, (t_vec){app->cur_pos.x, app->cur_pos.y + 1}); break;
+		case 0: move_to(&app->player, (t_vec){app->player.cur_pos.x - 1, app->player.cur_pos.y}, app->shared->map);
+			break;
+		case 1: move_to(&app->player, (t_vec){app->player.cur_pos.x + 1, app->player.cur_pos.y}, app->shared->map);
+			break;
+		case 2: move_to(&app->player, (t_vec){app->player.cur_pos.x, app->player.cur_pos.y - 1}, app->shared->map);
+			break;
+		case 3: move_to(&app->player, (t_vec){app->player.cur_pos.x, app->player.cur_pos.y + 1}, app->shared->map);
+			break;
 		default: break;
 	}
 	// TODO do game stuff

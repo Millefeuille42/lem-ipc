@@ -48,6 +48,8 @@
 # define TICK_RATE 200
 #endif
 
+#define MAP unsigned int map[BOARD_Y][BOARD_X]
+
 extern sem_t *stop_sem;
 
 typedef struct s_shared {
@@ -55,16 +57,20 @@ typedef struct s_shared {
 	int has_ui;
 	t_color color_offsets;
 	sem_t lock;
-	unsigned int map[BOARD_Y][BOARD_X];
+	MAP;
 } t_shared;
+
+typedef struct s_player {
+	int has_spawned;
+	unsigned int team;
+	t_vec cur_pos;
+} t_player;
 
 typedef struct s_app {
 	void *mlx;
 	void *window;
 	t_shared *shared;
-	int has_spawned;
-	unsigned int team;
-	t_vec cur_pos;
+	t_player player;
 	sem_t stop_sem;
 	t_img img;
 } t_app;
