@@ -8,7 +8,7 @@ fi
 count="$1"
 team_name="$2"
 
-for ((i=0; i<=$count; i++)); do
+for ((i=1; i<=$count; i++)); do
     echo "Team: $team_name - Iteration: $i"
     ./lemipc $team_name &
 done

@@ -117,6 +117,8 @@ all:	$(OBJS_DIR) $(DEPS_DIR) $(NAME) ## Compile project and dependencies
 $(NAME):	$(OBJS) $(LIB_MLX) ## Compile project
 			@printf "Linking %s\n" $@
 			@$(COMPILE) $(FLAGS) $^ $(LINK_FLAGS) -o $@
+			@rm -f $(NAME)_observer
+			@ln -s $(NAME) $(NAME)_observer
 
 mlx: $(LIB_MLX)
 

@@ -2,5 +2,6 @@
 .deps
 .objs
 lemipc
+lemipc_observer
 cmake-build-debug
 cmake-build-debug-coverage
