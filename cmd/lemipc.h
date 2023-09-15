@@ -37,15 +37,15 @@
 #endif
 
 #ifndef BOARD_X
-# define BOARD_X 50
+# define BOARD_X 100
 #endif
 
 #ifndef BOARD_Y
-# define BOARD_Y 50
+# define BOARD_Y 100
 #endif
 
 #ifndef TICK_RATE
-# define TICK_RATE 200
+# define TICK_RATE 100
 #endif
 
 #ifndef OBSERVER_TEAM

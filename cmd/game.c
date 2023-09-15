@@ -6,7 +6,7 @@
 
 t_vec get_first_free(MAP) {
 	errno = 0;
-#ifdef RANDOM_SPAWN
+#ifndef LINEAR_SPAWN
 	for (int tries = 0; tries < 50; tries++) {
 		t_vec pos = {random() % BOARD_X, random() % BOARD_Y};
 		if (!map[pos.y][pos.x]) return pos;

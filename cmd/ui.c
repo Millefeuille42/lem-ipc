@@ -13,12 +13,12 @@ inline static void image_pixel_put(const t_vec position, t_img *img, t_color *co
 }
 
 inline static void draw_square(t_vec position, t_img *img, t_color *const color) {
-	for (unsigned long y = 0; y < SCREEN_Y / BOARD_Y + 1; y++) {
-		for (unsigned long x = 0; x < (SCREEN_X / BOARD_X) + 1; x++) {
+	for (unsigned long y = 0; y < (SCREEN_Y / BOARD_Y); y++) {
+		for (unsigned long x = 0; x < (SCREEN_X / BOARD_X); x++) {
 			image_pixel_put(
 					(t_vec){
-							position.x * SCREEN_X / BOARD_X + x,
-							position.y * SCREEN_Y / BOARD_Y + y
+							position.x * (SCREEN_X / BOARD_X) + x,
+							position.y * (SCREEN_Y / BOARD_Y) + y
 					}, img, color
 			);
 		}
@@ -71,7 +71,7 @@ inline static void create_image(void *mlx, t_img *img) {
 inline static int setup_window(t_app *app) {
 	app->mlx = mlx_init();
 	if (!app->mlx) return 1;
-	app->window = mlx_new_window(app->mlx, 500, 500, "lem-ipc");
+	app->window = mlx_new_window(app->mlx, SCREEN_X, SCREEN_Y, "lem-ipc");
 	if (!app->window) {
 		mlx_destroy_display(app->mlx);
 		return 1;

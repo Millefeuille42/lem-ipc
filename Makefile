@@ -80,8 +80,8 @@ ifdef SCREEN_Y
 	DEFINES +=  -DSCREEN_Y=$(SCREEN_Y)
 endif
 
-ifdef RANDOM_SPAWN
-	DEFINES +=  -DRANDOM_SPAWN=1
+ifdef LINEAR_SPAWN
+	DEFINES +=  -DLINEAR_SPAWN=1
 endif
 
 FLAGS		= -Wall -Werror -Wextra -pedantic $(INCLUDES) $(DEFINES)

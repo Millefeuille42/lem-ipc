@@ -132,7 +132,7 @@ void print_opts(void) {
 	printf("SCREEN_Y:      %d\n", SCREEN_Y);
 	printf("TICK_RATE:     %d\n", TICK_RATE);
 	printf("OBSERVER_TEAM: %s\n", OBSERVER_TEAM);
-#ifdef RANDOM_SPAWN
+#ifndef LINEAR_SPAWN
 	printf("SPAWN_TYPE:    RANDOM\n");
 #else
 	printf("SPAWN_TYPE:    LINEAR\n");

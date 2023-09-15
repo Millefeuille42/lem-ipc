@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(lemipc C CXX)
 
 set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall -Werror -Wextra -pedantic -DRANDOM_SPAWN=1 -DTICK_RATE=50 -DBOARD_X=100 -DBOARD_Y=100")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall -Werror -Wextra -pedantic -DTICK_RATE=100 -DBOARD_X=100 -DBOARD_Y=100")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Werror -Wextra -pedantic")
 
 include_directories(./pkg/minilibx-linux)
