@@ -118,7 +118,7 @@ int main(void) {
 	// TODO create game loop
 
 	errno = 0;
-	srand(time(NULL));
+	srandom(time(NULL));
 	if (errno) panic("srand");
 
 	t_app app = {0};
