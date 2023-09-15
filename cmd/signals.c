@@ -15,7 +15,7 @@ void handle_signal(int sig, siginfo_t *info, void *context) {
 }
 
 void setup_sigs(void) {
-	struct sigaction sigint;
+	struct sigaction sigint = {0};
 
 	sigint.sa_sigaction = handle_signal;
 	sigaction(SIGINT, &sigint, NULL);

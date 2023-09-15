@@ -9,7 +9,7 @@
 # include <errno.h>
 # include <stdlib.h>
 
-# include "../ft_print/ft_print.h"
+# include <ft_print.h>
 
 void log_error(char *);
 void panic(char *);

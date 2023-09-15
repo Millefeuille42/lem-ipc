@@ -4,7 +4,7 @@
 
 #include "lemipc.h"
 
-char init_key(void) {
+inline static char init_key(void) {
 	struct stat keyfile_stat;
 	stat(KEY_FILE, &keyfile_stat);
 	if (errno) {
@@ -12,44 +12,46 @@ char init_key(void) {
 			errno = 0;
 			ft_putstr("keyfile not found, creating it...\n");
 			int fd = creat(KEY_FILE, S_IREAD | S_IWRITE);
-			if (errno) panic("creat");
+			if (errno) log_error("creat");
 			close(fd);
-			if (errno) panic("close");
+			if (errno) log_error("close");
 			return 1;
 		} else panic("stat");
 	}
 	return 0;
 }
 
-int get_key(void) {
+inline static int get_key(void) {
 	key_t key = ftok(KEY_FILE, PROJ_KEY);
 	if (errno) panic("ftok");
 	return key;
 }
 
-int init_shared(t_app *app) {
+inline static int init_shared(t_app *app) {
 	char is_first = init_key();
-	int shm_id = shmget(get_key(), sizeof(int) * 4, IPC_CREAT | 0666);
+	int shm_id = get_shmem(get_key(), sizeof(t_shared));
 	if (errno) return errno;
-	app->shared = shmat(shm_id, NULL, 0);
+	app->shared = attach_shmem(shm_id);
 	if (errno) {
-		shmctl(shm_id, IPC_RMID, NULL);
+		delete_shmem(shm_id);
 		return errno;
 	}
 	if (is_first) {
-		bzero(app->shared, sizeof(*app->shared));
+		*app->shared = (t_shared){0};
+		sem_init(&app->shared->lock, 1, 1);
+		if (errno) {
+			delete_shmem(shm_id);
+			return errno;
+		}
 		app->shared->shm_id = shm_id;
 	}
 	return is_first;
 }
 
-unsigned long get_attached_num(int shm_id) {
+void close_lock(sem_t *lock) {
 	errno = 0;
-	struct shmid_ds buf;
-	ft_bzero(&buf, sizeof(buf));
-	shmctl(shm_id, IPC_STAT, &buf);
-	if (errno) return 0;
-	return buf.shm_nattch;
+	sem_destroy(lock);
+	if (errno) log_error("sem_destroy");
 }
 
 int quit(t_app *app) {
@@ -60,45 +62,52 @@ int quit(t_app *app) {
 		mlx_destroy_display(app->mlx);
 		free(app->mlx);
 	}
+	printf("deleting stop lock\n");
+	close_lock(&app->stop_sem);
 	int shm_id = (int)app->shared->shm_id;
 	if (app->shared) {
-		errno = 0;
 		printf("detaching from shared memory %d\n", shm_id);
-		shmdt(app->shared);
-		if (errno) panic("shmdt");
+		detach_shmem((void **) &app->shared);
+		if (errno) log_error("shmdt");
 	}
-	unsigned long nattch = get_attached_num(shm_id);
-	if (errno) panic("nattch");
+	unsigned long nattch = get_shmem_nattch(shm_id);
+	if (errno) log_error("nattch");
 	if (nattch <= 0) {
+		printf("deleting shared lock\n");
+		close_lock(&app->shared->lock);
 		printf("deleting shared memory %d\n", shm_id);
-		shmctl(shm_id, IPC_RMID, NULL);
-		if (errno) panic("IPC_RMID");
+		delete_shmem(shm_id);
+		if (errno) log_error("IPC_RMID");
 		remove(KEY_FILE);
 	}
 	printf("exiting...\n");
 	stop_sem = NULL;
-	exit(0);
+	exit(errno);
 }
 
-void loop(t_app *app) {
+inline static void log_and_quit(t_app *app, char *message) {
+	log_error(message);
+	quit(app);
+}
+
+inline static void loop(t_app *app) {
 	while (1) {
-		sleep(1);
-		printf("main_loop\n");
 		sem_trywait(&app->stop_sem);
 		if (!errno || errno == EINTR) break;
 		else if (errno && errno != EAGAIN) log_error("sem");
-		printf("%d", app->shared->has_ui);
 		if (!app->shared->has_ui) {
 			app->shared->has_ui = 1;
 			printf("creating UI\n");
 			ui_start(app);
 			stop_sem = NULL;
 		}
+		int ret = game_loop(app);
+		if (errno) log_error("game_loop");
+		if (ret) break;
 	}
 }
 
 int main(void) {
-	// TODO add semaphores for shared mem access
 	// TODO add game elements
 	// TODO create game loop
 
@@ -106,24 +115,26 @@ int main(void) {
 	srand(time(NULL));
 	if (errno) panic("srand");
 
-	t_app app;
-	ft_bzero(&app, sizeof(app));
+	t_app app = {0};
 	int is_first = init_shared(&app);
-	if (errno) panic("init shared");
-	if (is_first) printf("created shared memory%d\n", app.shared->shm_id);
-	else printf("got shared memory%d\n", app.shared->shm_id);
-
-	unsigned long nattch = get_attached_num(app.shared->shm_id);
 	if (errno) {
-		shmctl(app.shared->shm_id, IPC_RMID, NULL);
-		return errno;
+		if (is_first) remove(KEY_FILE);
+		panic("init shared");
 	}
-	printf("%lu process(es) attached\n", nattch);
+
+	if (is_first) printf("created shared memory %d\n", app.shared->shm_id);
+	else printf("got shared memory %d\n", app.shared->shm_id);
 
 	sem_init(&app.stop_sem, 0, 0);
 	stop_sem = &app.stop_sem;
+	if (errno) log_and_quit(&app, "stop_sem");
+
+	unsigned long nattch = get_shmem_nattch(app.shared->shm_id);
+	if (errno) log_and_quit(&app, "nattch");
+	printf("%lu process(es) attached\n", nattch);
+
 	setup_sigs();
-	if (errno) panic("sigs");
+	if (errno) log_and_quit(&app, "sigs");
 	loop(&app);
 	quit(&app);
 }

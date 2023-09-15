@@ -8,16 +8,14 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <X11/X.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <semaphore.h>
 #include <time.h>
 #include <sys/ipc.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #include <sys/shm.h>
-#include <stdio.h>
-#include <semaphore.h>
 #include <ft_error.h>
-#include <ft_memory.h>
 
 #include "ui.h"
 
@@ -50,6 +48,7 @@ extern sem_t *stop_sem;
 typedef struct s_shared {
 	int shm_id;
 	int has_ui;
+	sem_t lock;
 	char map[BOARD_Y][BOARD_X];
 } t_shared;
 
@@ -65,5 +64,12 @@ void ui_start(t_app *app);
 int quit(t_app *app);
 void handle_signal(int sig, siginfo_t *info, void *context);
 void setup_sigs(void);
+
+int get_shmem(int key, size_t size);
+void delete_shmem(int shm_id);
+void detach_shmem(void **mem);
+void *attach_shmem(int shm_id);
+unsigned long get_shmem_nattch(int shm_id);
+int game_loop(t_app *app);
 
 #endif //LEMIPC_LEMIPC_H

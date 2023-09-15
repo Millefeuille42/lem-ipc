@@ -8,5 +8,4 @@
 void log_error(char *add) {
     ft_fputstr("lemipc: error: ", 1);
 	perror(add);
-	ft_putchar('\n');
 }

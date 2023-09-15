@@ -6,6 +6,7 @@
 # define LEMIPC_UI_H
 
 # include <mlx.h>
+# include <X11/X.h>
 
 typedef struct s_vec {
 	int x;

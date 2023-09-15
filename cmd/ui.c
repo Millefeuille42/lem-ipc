@@ -51,7 +51,7 @@ inline static void draw_board(t_app *app) {
 	}
 }
 
-inline static int game_loop(t_app *app) {
+inline static int ui_loop(t_app *app) {
 	if (!app->img.v_img) return 1;
 	draw_board(app);
 	mlx_put_image_to_window(app->mlx, app->window, app->img.v_img, 0, 0);
@@ -59,6 +59,9 @@ inline static int game_loop(t_app *app) {
 	sem_trywait(&app->stop_sem);
 	if (!errno || errno == EINTR) quit(app);
 	else if (errno && errno != EAGAIN) log_error("sem");
+	int ret = game_loop(app);
+	if (errno) log_error("game_loop");
+	if (ret) quit(app);
 	return 0;
 }
 
@@ -81,8 +84,8 @@ inline static int setup_window(t_app *app) {
 	app->img.v_img = NULL;
 	create_image(app->mlx, &app->img);
 	mlx_hook(app->window, DestroyNotify, StructureNotifyMask, &quit, app);
-	mlx_hook(app->window, VisibilityNotify, VisibilityChangeMask, &game_loop, app);
-	mlx_loop_hook(app->mlx, &game_loop, app);
+	mlx_hook(app->window, VisibilityNotify, VisibilityChangeMask, &ui_loop, app);
+	mlx_loop_hook(app->mlx, &ui_loop, app);
 	return 0;
 }
 

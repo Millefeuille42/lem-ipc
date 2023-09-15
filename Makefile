@@ -1,5 +1,3 @@
-.DEFAULT_GOAL := all
-
 ######### Sources #########
 
 LIB_MLX_DIR = pkg/minilibx-linux
@@ -12,13 +10,11 @@ SOURCES	=			pkg/ft_print/ft_putchar.c\
             		pkg/ft_print/ft_putnbr.c\
             		pkg/ft_error/panic.c\
             		pkg/ft_error/log_error.c\
-            		pkg/ft_memory/zeroed_malloc.c\
-            		pkg/ft_memory/ft_bzero.c\
-            		pkg/ft_memory/del_array.c\
-            		pkg/ft_memory/safe_free.c\
             		cmd/main.c\
             		cmd/ui.c\
-            		cmd/utils.c\
+            		cmd/signals.c\
+            		cmd/shmem.c\
+            		cmd/game.c\
 
 HEADERS	=	pkg/ft_error/ft_error.h\
 			pkg/ft_print/ft_print.h\
@@ -72,21 +68,26 @@ DEPS	=	$(addprefix $(DEPS_DIR), $(SOURCES:.$(SOURCES_EXTENSION)=.d))
 
 #########  Rules  #########
 
-all:	$(LIB_MLX) $(OBJS_DIR) $(DEPS_DIR) $(NAME) ## Compile project and dependencies
+.DEFAULT_GOAL := $(NAME)
+
+all:	$(OBJS_DIR) $(DEPS_DIR) $(NAME) ## Compile project and dependencies
+
+$(NAME):	$(OBJS) $(LIB_MLX) ## Compile project
+			@printf "Linking %s\n" $@
+			@$(COMPILE) $(FLAGS) $^ $(LINK_FLAGS) -o $@
+
+mlx: $(LIB_MLX)
 
 $(LIB_MLX):
 	@printf "Compiling mlx\n"
 	@$(MAKE_LIB_MLX) > /dev/null
-
-$(NAME):	$(OBJS) ## Compile project
-			@printf "Linking %s\n" $@
-			@$(COMPILE) $(FLAGS) $^ $(LINK_FLAGS) -o $@
 
 clean: clean_deps clean_objs ## Delete object files
 
 fclean:	clean clean_bin mlx_clean ## Delete object files and binary
 
 mlx_clean:
+	@printf "Cleaning mlx\n"
 	@$(MAKE_LIB_MLX) clean > /dev/null
 
 re:	fclean ## Delete object files and binary, then recompile all
@@ -99,11 +100,14 @@ help: ## Print this help
 objs:	$(OBJS_DIR) $(DEPS_DIR) $(OBJS)
 
 clean_deps:
-			$(DELETE) -r $(DEPS_DIR)
+			@printf "Deleting %s\n" $(DEPS_DIR)
+			@$(DELETE) -r $(DEPS_DIR)
 clean_objs:
-			$(DELETE) -r $(OBJS_DIR)
+			@printf "Deleting %s\n" $(OBJS_DIR)
+			@$(DELETE) -r $(OBJS_DIR)
 clean_bin:
-			$(DELETE) $(NAME)
+			@printf "Deleting %s\n" $(NAME)
+			@$(DELETE) $(NAME)
 
 #########  Implicit Rules  #########
 
@@ -119,7 +123,7 @@ $(OBJS_DIR)%.o:	%.$(SOURCES_EXTENSION)
 			@printf "Compiling %s\n" $^
 			@$(COMPILE) $(FLAGS) -MMD -MP -MF $(DEPS_DIR)$*.d -c $< -o $@
 
-.PHONY:	all clean fclean re help
+.PHONY:	all clean fclean re help mlx mlx_clean objs clean_bin clean_deps clean_objs
 
 #########  Includes  #########
 

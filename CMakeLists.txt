@@ -7,8 +7,7 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Werror -Wextra -pedantic"
 
 include_directories(./pkg/minilibx-linux)
 include_directories(./pkg/ft_error)
-include_directories(./pkg/ft_string)
-include_directories(./pkg/ft_memory)
+include_directories(./pkg/ft_print)
 
 set(SOURCE_LEM_IPC
 		pkg/ft_print/ft_putchar.c
@@ -22,19 +21,15 @@ set(SOURCE_LEM_IPC
 		pkg/ft_error/log_error.c
 		pkg/ft_error/ft_error.h
 
-		pkg/ft_memory/zeroed_malloc.c
-		pkg/ft_memory/ft_bzero.c
-		pkg/ft_memory/del_array.c
-		pkg/ft_memory/safe_free.c
-		pkg/ft_memory/ft_memory.h
-
 		pkg/minilibx-linux/mlx.h
 
 		cmd/main.c
 		cmd/ui.c
+        cmd/signals.c
+		cmd/shmem.c
+		cmd/game.c
 		cmd/ui.h
 		cmd/lemipc.h
-		cmd/utils.c
 )
 
 add_executable(lemipc ${SOURCE_LEM_IPC})
