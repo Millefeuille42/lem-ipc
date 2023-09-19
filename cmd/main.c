@@ -4,50 +4,6 @@
 
 #include "lemipc.h"
 
-inline static char init_key(void) {
-	struct stat keyfile_stat;
-	stat(KEY_FILE, &keyfile_stat);
-	if (errno) {
-		if (errno == ENOENT) {
-			errno = 0;
-			ft_putstr("keyfile not found, creating it...\n");
-			int fd = creat(KEY_FILE, S_IREAD | S_IWRITE);
-			if (errno) log_error("creat");
-			close(fd);
-			if (errno) log_error("close");
-			return 1;
-		} else panic("stat");
-	}
-	return 0;
-}
-
-inline static int get_key(void) {
-	key_t key = ftok(KEY_FILE, PROJ_KEY);
-	if (errno) panic("ftok");
-	return key;
-}
-
-inline static int init_shared(t_app *app) {
-	char is_first = init_key();
-	int shm_id = get_shmem(get_key(), sizeof(t_shared));
-	if (errno) return errno;
-	app->shared = attach_shmem(shm_id);
-	if (errno) {
-		delete_shmem(shm_id);
-		return errno;
-	}
-	if (is_first) {
-		*app->shared = (t_shared){0};
-		sem_init(&app->shared->lock, 1, 1);
-		if (errno) {
-			delete_shmem(shm_id);
-			return errno;
-		}
-		app->shared->shm_id = shm_id;
-	}
-	return is_first;
-}
-
 void close_lock(sem_t *lock) {
 	errno = 0;
 	sem_destroy(lock);
@@ -84,6 +40,9 @@ int quit(t_app *app) {
 		printf("deleting shared memory %d\n", shm_id);
 		delete_shmem(shm_id);
 		if (errno) log_error("IPC_RMID");
+		printf("deleting msgq %d\n", app->qid);
+		delete_msgq(app->qid);
+		if (errno) log_error("MSG_RMID");
 		remove(KEY_FILE);
 	}
 	printf("exiting...\n");
@@ -125,7 +84,7 @@ inline static void loop(t_app *app) {
 	}
 }
 
-void print_opts(void) {
+inline static void print_opts(void) {
 	printf("BOARD_X:       %d\n", BOARD_X);
 	printf("BOARD_Y:       %d\n", BOARD_Y);
 	printf("SCREEN_X:      %d\n", SCREEN_X);
@@ -138,6 +97,55 @@ void print_opts(void) {
 	printf("SPAWN_TYPE:    LINEAR\n");
 #endif
 	exit(0);
+}
+
+inline static char init_key(void) {
+	struct stat keyfile_stat;
+	stat(KEY_FILE, &keyfile_stat);
+	if (errno) {
+		if (errno == ENOENT) {
+			errno = 0;
+			ft_putstr("keyfile not found, creating it...\n");
+			int fd = creat(KEY_FILE, S_IREAD | S_IWRITE);
+			if (errno) log_error("creat");
+			close(fd);
+			if (errno) log_error("close");
+			return 1;
+		} else panic("stat");
+	}
+	return 0;
+}
+
+inline static int get_key(void) {
+	key_t key = ftok(KEY_FILE, PROJ_KEY);
+	if (errno) panic("ftok");
+	return key;
+}
+
+inline static int init_shared(t_app *app) {
+	char is_first = init_key();
+	int shm_id = get_shmem(get_key(), sizeof(t_shared));
+	if (errno) return errno;
+	app->shared = attach_shmem(shm_id);
+	if (errno) {
+		delete_shmem(shm_id);
+		return errno;
+	}
+	if (is_first) {
+		*app->shared = (t_shared){0};
+		sem_init(&app->shared->lock, 1, 1);
+		if (errno) {
+			delete_shmem(shm_id);
+			return errno;
+		}
+		app->shared->shm_id = shm_id;
+	}
+	app->qid = get_msgq(get_key());
+	if (errno) {
+		delete_shmem(shm_id);
+		return errno;
+	}
+	return is_first;
 }
 
 int main(int argc, char *argv[]) {
@@ -166,8 +174,14 @@ int main(int argc, char *argv[]) {
 		panic("init shared");
 	}
 
-	if (is_first) printf("created shared memory %d\n", app.shared->shm_id);
-	else printf("got shared memory %d\n", app.shared->shm_id);
+	if (is_first) {
+		printf("created shared memory %d\n", app.shared->shm_id);
+		printf("created msgq %d\n", app.qid);
+	}
+	else {
+		printf("got shared memory %d\n", app.shared->shm_id);
+		printf("got msgq %d\n", app.qid);
+	}
 
 	sem_init(&app.stop_sem, 0, 0);
 	stop_sem = &app.stop_sem;

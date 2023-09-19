@@ -15,6 +15,8 @@
 #include <sys/ipc.h>
 #include <sys/stat.h>
 #include <sys/shm.h>
+#include <sys/msg.h>
+
 #include <ft_error.h>
 #include <ft_string.h>
 
@@ -77,13 +79,14 @@ typedef struct s_app {
 	void *window;
 	t_shared *shared;
 	unsigned int observer_team;
+	int qid;
 	t_player player;
 	sem_t stop_sem;
 	t_img img;
 } t_app;
 
-void ui_start(t_app *app);
 int quit(t_app *app);
+void ui_start(t_app *app);
 void handle_signal(int sig, siginfo_t *info, void *context);
 void setup_sigs(void);
 
@@ -92,6 +95,12 @@ void delete_shmem(int shm_id);
 void detach_shmem(void **mem);
 void *attach_shmem(int shm_id);
 unsigned long get_shmem_nattch(int shm_id);
+
+void delete_msgq(int qid);
+int read_message_for_team(int qid, const t_vec *message, unsigned int team);
+int send_message_to_team(int qid, const t_vec *message, unsigned int team);
+int get_msgq(int key);
+
 int game_loop(t_app *app);
 
 #endif //LEMIPC_LEMIPC_H

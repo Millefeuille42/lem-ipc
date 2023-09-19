@@ -82,6 +82,17 @@ void spawn_behavior(t_app *app) {
 
 void idle_behavior(t_app *app) {
 	t_vec closest_enemy = {0};
+
+	read_message_for_team(app->qid, &closest_enemy, app->player.team);
+	if (!errno) {
+		app->player.prey = closest_enemy;
+		app->player.has_prey = 1;
+		hunt_behavior(app);
+		return;
+	}
+	if (errno && errno != EAGAIN && errno != ENOMSG) log_error("msgq read");
+	errno = 0;
+
 	unsigned int num_of_mates = get_board_info(&app->player, &closest_enemy, app->shared->map);
 	if (!errno && num_of_mates >= 2) {
 		app->player.prey = closest_enemy;
@@ -89,7 +100,7 @@ void idle_behavior(t_app *app) {
 		hunt_behavior(app);
 		return;
 	}
-	printf("idle\n");
+	errno = 0;
 
 	char next_move = (char)(random() % 4);
 	switch (next_move) {
@@ -106,9 +117,6 @@ void idle_behavior(t_app *app) {
 	errno = 0;
 }
 
-// TODO improve behavior
-//  communicate prey with others
-//  try other axis if movement is unavailable
 void hunt_behavior(t_app *app) {
 	unsigned int prey_value = app->shared->map[app->player.prey.y][app->player.prey.x];
 	if (!prey_value || prey_value == app->player.team) {
@@ -116,7 +124,10 @@ void hunt_behavior(t_app *app) {
 		idle_behavior(app);
 		return;
 	}
-	printf("on the hunt\n");
+
+	send_message_to_team(app->qid, &app->player.prey, app->player.team);
+	if (errno && errno != EAGAIN) log_error("msgq send");
+	errno = 0;
 
 	t_vec prey_dist = get_distance(&app->player.cur_pos, &app->player.prey);
 	if (prey_dist.x > prey_dist.y) {

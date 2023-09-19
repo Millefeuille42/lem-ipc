@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(lemipc C CXX)
 
 set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall -Werror -Wextra -pedantic -DTICK_RATE=100 -DBOARD_X=100 -DBOARD_Y=100")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall -Werror -Wextra -pedantic")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Werror -Wextra -pedantic")
 
 include_directories(./pkg/minilibx-linux)
@@ -51,6 +51,7 @@ set(SOURCE_LEM_IPC
 		cmd/ui.h
 		cmd/lemipc.h
 		cmd/game.h
+		cmd/msgq.c
 )
 
 add_executable(lemipc ${SOURCE_LEM_IPC})

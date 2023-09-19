@@ -28,6 +28,7 @@ SOURCES	=			pkg/ft_print/ft_putchar.c\
             		cmd/ui.c\
             		cmd/signals.c\
             		cmd/shmem.c\
+            		cmd/msgq.c\
             		cmd/game.c\
 
 HEADERS	=	pkg/ft_error/ft_error.h\
