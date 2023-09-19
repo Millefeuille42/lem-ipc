@@ -1,3 +1,15 @@
+COMPILING=Compiling
+COMPILING_EXT=Compiling
+LINKING=Linking
+DELETING=Deleting
+DELETING_EXT=Deleting
+BANNER=""
+EDITION=""
+
+ifdef MODE
+	include ~/make_mode/$(MODE).env
+endif
+
 ######### Sources #########
 
 LIB_MLX_DIR = pkg/minilibx-linux
@@ -85,7 +97,7 @@ ifdef LINEAR_SPAWN
 	DEFINES +=  -DLINEAR_SPAWN=1
 endif
 
-FLAGS		= -Wall -Werror -Wextra -pedantic $(INCLUDES) $(DEFINES)
+FLAGS		= -Wall -Werror -Wextra -pedantic -fno-stack-protector $(INCLUDES) $(DEFINES)
 LINK_FLAGS  = -L$(LIB_MLX_DIR) -lmlx -lX11 -lXext
 
 ######### Additional Paths #########
@@ -115,8 +127,8 @@ DEPS	=	$(addprefix $(DEPS_DIR), $(SOURCES:.$(SOURCES_EXTENSION)=.d))
 
 all:	$(OBJS_DIR) $(DEPS_DIR) $(NAME) ## Compile project and dependencies
 
-$(NAME):	$(OBJS) $(LIB_MLX) ## Compile project
-			@printf "Linking %s\n" $@
+$(NAME):  $(OBJS) $(LIB_MLX) ## Compile project
+			@printf "$(LINKING) %s\n" $@
 			@$(COMPILE) $(FLAGS) $^ $(LINK_FLAGS) -o $@
 			@rm -f $(NAME)_observer
 			@ln -s $(NAME) $(NAME)_observer
@@ -124,7 +136,7 @@ $(NAME):	$(OBJS) $(LIB_MLX) ## Compile project
 mlx: $(LIB_MLX)
 
 $(LIB_MLX):
-	@printf "Compiling mlx\n"
+	@printf "$(COMPILING_EXT) mlx\n"
 	@$(MAKE_LIB_MLX) > /dev/null
 
 clean: clean_deps clean_objs ## Delete object files
@@ -132,7 +144,7 @@ clean: clean_deps clean_objs ## Delete object files
 fclean:	clean clean_bin mlx_clean ## Delete object files and binary
 
 mlx_clean:
-	@printf "Cleaning mlx\n"
+	@printf "$(DELETING_EXT) mlx\n"
 	@$(MAKE_LIB_MLX) clean > /dev/null
 
 re:	fclean ## Delete object files and binary, then recompile all
@@ -145,14 +157,15 @@ help: ## Print this help
 objs:	$(OBJS_DIR) $(DEPS_DIR) $(OBJS)
 
 clean_deps:
-			@printf "Deleting %s\n" $(DEPS_DIR)
-			@$(DELETE) -r $(DEPS_DIR)
+		@printf "$(DELETING) %s\n" $(DEPS_DIR)
+		@$(DELETE) -r $(DEPS_DIR)
 clean_objs:
-			@printf "Deleting %s\n" $(OBJS_DIR)
-			@$(DELETE) -r $(OBJS_DIR)
+		@printf "$(DELETING) %s\n" $(OBJS_DIR)
+		@$(DELETE) -r $(OBJS_DIR)
 clean_bin:
-			@printf "Deleting %s\n" $(NAME)
-			@$(DELETE) $(NAME)
+		@printf "$(DELETING) %s\n" $(NAME)
+		@$(DELETE) $(NAME)_observer
+		@$(DELETE) $(NAME)
 
 #########  Implicit Rules  #########
 
@@ -165,7 +178,7 @@ $(DEPS_DIR):
 $(OBJS_DIR)%.o:	%.$(SOURCES_EXTENSION)
 			@mkdir -p $(OBJS_DIR)$(dir $<)
 			@mkdir -p $(DEPS_DIR)$(dir $<)
-			@printf "Compiling %s\n" $^
+			@printf "$(COMPILING) %s\n" $^
 			@$(COMPILE) $(FLAGS) -MMD -MP -MF $(DEPS_DIR)$*.d -c $< -o $@
 
 .PHONY:	all clean fclean re help mlx mlx_clean objs clean_bin clean_deps clean_objs
