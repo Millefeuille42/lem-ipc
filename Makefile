@@ -3,6 +3,8 @@ COMPILING_EXT=Compiling
 LINKING=Linking
 DELETING=Deleting
 DELETING_EXT=Deleting
+ON_ERROR=Step returned an error
+ON_ERROR_EXT=Step returned an error
 BANNER=""
 EDITION=""
 
@@ -148,7 +150,10 @@ mlx: $(LIB_MLX)
 
 $(LIB_MLX):
 	@printf "$(COMPILING_EXT) mlx\n"
-	@$(MAKE_LIB_MLX) > /dev/null
+	@MLX_OUTPUT="$(shell $(MAKE_LIB_MLX) 2>&1 >/dev/null)"
+ifeq ($(strip $(MLX_OUTPUT)),)
+	@printf "$(ON_ERROR): $(COMPILING_EXT) mlx\n"
+endif
 
 clean: clean_deps clean_objs ## Delete object files
 
