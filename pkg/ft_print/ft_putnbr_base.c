@@ -4,7 +4,7 @@
 
 #include "ft_print.h"
 
-static void ft_set(unsigned long nb, int l, unsigned long bl, const char *b)
+static void ft_set(unsigned long nb, long l, unsigned long bl, const char *b)
 {
 	int	i;
 	char n[l];

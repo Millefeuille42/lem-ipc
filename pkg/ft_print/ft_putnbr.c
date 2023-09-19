@@ -4,7 +4,7 @@
 
 #include "ft_print.h"
 
-void ft_fputnbr(int n, int fd) {
+void ft_fputnbr(long n, int fd) {
 	long int nb = n;
 	if (nb < 0) {
 		nb = -nb;
@@ -19,7 +19,7 @@ void ft_fputnbr(int n, int fd) {
 	write(fd, &nb, 1);
 }
 
-void ft_putnbr(int n) {
+void ft_putnbr(long n) {
 	long int nb = n;
 	if (nb < 0) {
 		nb = -nb;

@@ -52,6 +52,7 @@ set(SOURCE_LEM_IPC
 		cmd/lemipc.h
 		cmd/game.h
 		cmd/msgq.c
+		pkg/ft_print/ft_putnbr_in_between.c
 )
 
 add_executable(lemipc ${SOURCE_LEM_IPC})

@@ -13,7 +13,7 @@ void close_lock(sem_t *lock) {
 int quit(t_app *app) {
 	if (app->player.has_spawned) {
 		sem_wait(&app->shared->lock);
-		printf("unregistered\n");
+		ft_putstr("unregistered\n");
 		app->shared->map[app->player.cur_pos.y][app->player.cur_pos.x] = 0;
 		sem_post(&app->shared->lock);
 	}
@@ -24,28 +24,28 @@ int quit(t_app *app) {
 		mlx_destroy_display(app->mlx);
 		free(app->mlx);
 	}
-	printf("deleting stop lock\n");
+	ft_putstr("deleting stop lock\n");
 	close_lock(&app->stop_sem);
 	int shm_id = (int)app->shared->shm_id;
 	if (app->shared) {
-		printf("detaching from shared memory %d\n", shm_id);
+		ft_putnbr_in_between("detaching from shared memory ", shm_id, "\n");
 		detach_shmem((void **) &app->shared);
 		if (errno) log_error("shmdt");
 	}
 	unsigned long nattch = get_shmem_nattch(shm_id);
 	if (errno) log_error("nattch");
 	if (nattch <= 0) {
-		printf("deleting shared lock\n");
+		ft_putstr("deleting shared lock\n");
 		close_lock(&app->shared->lock);
-		printf("deleting shared memory %d\n", shm_id);
+		ft_putnbr_in_between("deleting shared memory ", shm_id, "\n");
 		delete_shmem(shm_id);
 		if (errno) log_error("IPC_RMID");
-		printf("deleting msgq %d\n", app->qid);
+		ft_putnbr_in_between("deleting msgq ", app->qid, "\n");
 		delete_msgq(app->qid);
 		if (errno) log_error("MSG_RMID");
 		remove(KEY_FILE);
 	}
-	printf("exiting...\n");
+	ft_putstr("exiting...\n");
 	stop_sem = NULL;
 	exit(errno);
 }
@@ -74,7 +74,7 @@ inline static void loop(t_app *app) {
 		else if (errno && errno != EAGAIN) log_error("sem");
 		if (!app->shared->has_ui) {
 			app->shared->has_ui = 1;
-			printf("creating UI\n");
+			ft_putstr("creating UI\n");
 			ui_start(app);
 			stop_sem = NULL;
 		}
@@ -85,16 +85,18 @@ inline static void loop(t_app *app) {
 }
 
 inline static void print_opts(void) {
-	printf("BOARD_X:       %d\n", BOARD_X);
-	printf("BOARD_Y:       %d\n", BOARD_Y);
-	printf("SCREEN_X:      %d\n", SCREEN_X);
-	printf("SCREEN_Y:      %d\n", SCREEN_Y);
-	printf("TICK_RATE:     %d\n", TICK_RATE);
-	printf("OBSERVER_TEAM: %s\n", OBSERVER_TEAM);
+	ft_putnbr_in_between("BOARD_X:       ", BOARD_X, "\n");
+	ft_putnbr_in_between("BOARD_Y:       ", BOARD_Y, "\n");
+	ft_putnbr_in_between("SCREEN_X:      ", SCREEN_X, "\n");
+	ft_putnbr_in_between("SCREEN_Y:      ", SCREEN_Y, "\n");
+	ft_putnbr_in_between("TICK_RATE:     ", TICK_RATE, "\n");
+	ft_putstr("OBSERVER_TEAM: ");
+	ft_putstr(OBSERVER_TEAM);
+	ft_putstr("\n");
 #ifndef LINEAR_SPAWN
-	printf("SPAWN_TYPE:    RANDOM\n");
+	ft_putstr("SPAWN_TYPE:    RANDOM\n");
 #else
-	printf("SPAWN_TYPE:    LINEAR\n");
+	ft_putstr("SPAWN_TYPE:    LINEAR\n");
 #endif
 	exit(0);
 }
@@ -175,12 +177,12 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (is_first) {
-		printf("created shared memory %d\n", app.shared->shm_id);
-		printf("created msgq %d\n", app.qid);
+		ft_putnbr_in_between("created shared memory ", app.shared->shm_id, "\n");
+		ft_putnbr_in_between("created msgq ", app.qid, "\n");
 	}
 	else {
-		printf("got shared memory %d\n", app.shared->shm_id);
-		printf("got msgq %d\n", app.qid);
+		ft_putnbr_in_between("got shared memory ", app.shared->shm_id, "\n");
+		ft_putnbr_in_between("got msgq ", app.qid, "\n");
 	}
 
 	sem_init(&app.stop_sem, 0, 0);
@@ -189,7 +191,7 @@ int main(int argc, char *argv[]) {
 
 	unsigned long nattch = get_shmem_nattch(app.shared->shm_id);
 	if (errno) log_and_quit(&app, "nattch");
-	printf("%lu process(es) attached\n", nattch);
+	ft_putnbr_in_between("", (long)nattch, " process(es) attached\n");
 
 	setup_sigs();
 	if (errno) log_and_quit(&app, "sigs");

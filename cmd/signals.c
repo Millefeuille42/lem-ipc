@@ -10,7 +10,7 @@ void handle_signal(int sig, siginfo_t *info, void *context) {
 	(void)sig;
 	(void)context;
 	(void)info;
-	printf("caught ctrl-c\n");
+	ft_putstr("caught ctrl-c\n");
 	sem_post(stop_sem);
 }
 

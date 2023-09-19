@@ -17,6 +17,7 @@ LIB_MLX = $(LIB_MLX_DIR)/libmlx.a
 
 SOURCES	=			pkg/ft_print/ft_putchar.c\
             		pkg/ft_print/ft_putstr.c\
+            		pkg/ft_print/ft_putnbr_in_between.c\
             		pkg/ft_print/ft_putnbr_base_padded.c\
             		pkg/ft_print/ft_putnbr_base.c\
             		pkg/ft_print/ft_putnbr.c\
