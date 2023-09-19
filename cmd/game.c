@@ -66,15 +66,15 @@ size_t get_board_info(t_player *player, t_vec *closest_enemy, MAP) {
 }
 
 void spawn_behavior(t_app *app) {
-	ft_putstr("has not spawned\n");
+	ft_logstr(INFO, "has not spawned\n");
 	t_vec first_free = get_first_free(app->shared->map);
 	if (errno) {
 		errno = 0;
-		ft_putstr("could not register position\n");
+		ft_logstr(ERROR, "could not register position\n");
 		return;
 	}
-	ft_putnbr_in_between("registered position ", first_free.x, ",");
-	ft_putnbr_in_between("", first_free.y, "\n");
+	ft_lognbr_in_between(INFO, "registered position ", first_free.x, ",", 0);
+	ft_lognbr_in_between(INFO, "", first_free.y, "\n", 1);
 	app->shared->map[first_free.y][first_free.x] = app->player.team;
 	app->player.cur_pos = first_free;
 	app->player.has_spawned = 1;

@@ -37,6 +37,10 @@ SOURCES	=			pkg/ft_print/ft_putchar.c\
                     pkg/ft_memory/ft_bzero.c\
                     pkg/ft_memory/del_array.c\
                     pkg/ft_memory/safe_free.c\
+                    pkg/ft_log/print_level.c\
+                    pkg/ft_log/ft_logstr.c\
+                    pkg/ft_log/ft_lognbr.c\
+                    pkg/ft_log/ft_lognbr_in_between.c\
             		cmd/main.c\
             		cmd/ui.c\
             		cmd/signals.c\
@@ -48,6 +52,7 @@ HEADERS	=	pkg/ft_error/ft_error.h\
 			pkg/ft_print/ft_print.h\
             pkg/ft_string/ft_string.h\
             pkg/ft_memory/ft_memory.h\
+            pkg/ft_memory/ft_log.h\
 			pkg/minilibx-linux/mlx.h\
 			cmd/main.h\
 
@@ -56,6 +61,7 @@ HEADERS_DIRECTORIES	=	cmd/ \
                         pkg/ft_print/ \
                         pkg/ft_memory/ \
                         pkg/ft_string/ \
+                        pkg/ft_log/ \
                         $(LIB_MLX_DIR) \
 
 INCLUDES =	$(addprefix -I, $(HEADERS_DIRECTORIES))
@@ -72,7 +78,7 @@ DELETE		=	rm -f
 
 MAKE_LIB_MLX = make -C $(LIB_MLX_DIR)
 
-DEFINES =
+DEFINES = -DPROGRAM_NAME=\"$(NAME)\"
 
 ifdef TICK_RATE
 	DEFINES +=  -DTICK_RATE=$(TICK_RATE)
@@ -96,6 +102,10 @@ endif
 
 ifdef LINEAR_SPAWN
 	DEFINES +=  -DLINEAR_SPAWN=1
+endif
+
+ifdef LOG_LEVEL
+	DEFINES +=  -DLOG_LEVEL=$(LOG_LEVEL)
 endif
 
 FLAGS		= -Wall -Werror -Wextra -pedantic -fno-stack-protector $(INCLUDES) $(DEFINES)

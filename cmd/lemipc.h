@@ -5,6 +5,10 @@
 #ifndef LEMIPC_LEMIPC_H
 # define LEMIPC_LEMIPC_H
 
+# ifndef PROGRAM_NAME
+#  define PROGRAM_NAME "lemipc"
+#endif
+
 #include <signal.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -19,6 +23,7 @@
 
 #include <ft_error.h>
 #include <ft_string.h>
+#include <ft_log.h>
 
 #include "ui.h"
 

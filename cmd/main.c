@@ -13,7 +13,7 @@ void close_lock(sem_t *lock) {
 int quit(t_app *app) {
 	if (app->player.has_spawned) {
 		sem_wait(&app->shared->lock);
-		ft_putstr("unregistered\n");
+		ft_logstr(INFO, "unregistered\n");
 		app->shared->map[app->player.cur_pos.y][app->player.cur_pos.x] = 0;
 		sem_post(&app->shared->lock);
 	}
@@ -24,23 +24,23 @@ int quit(t_app *app) {
 		mlx_destroy_display(app->mlx);
 		free(app->mlx);
 	}
-	ft_putstr("deleting stop lock\n");
+	ft_logstr(DEBUG, "deleting stop lock\n");
 	close_lock(&app->stop_sem);
 	int shm_id = (int)app->shared->shm_id;
 	if (app->shared) {
-		ft_putnbr_in_between("detaching from shared memory ", shm_id, "\n");
+		ft_lognbr_in_between(DEBUG, "detaching from shared memory ", shm_id, "\n", 0);
 		detach_shmem((void **) &app->shared);
 		if (errno) log_error("shmdt");
 	}
 	unsigned long nattch = get_shmem_nattch(shm_id);
 	if (errno) log_error("nattch");
 	if (nattch <= 0) {
-		ft_putstr("deleting shared lock\n");
+		ft_logstr(DEBUG, "deleting shared lock\n");
 		close_lock(&app->shared->lock);
-		ft_putnbr_in_between("deleting shared memory ", shm_id, "\n");
+		ft_lognbr_in_between(DEBUG, "deleting shared memory ", shm_id, "\n", 0);
 		delete_shmem(shm_id);
 		if (errno) log_error("IPC_RMID");
-		ft_putnbr_in_between("deleting msgq ", app->qid, "\n");
+		ft_lognbr_in_between(DEBUG, "deleting msgq ", app->qid, "\n", 0);
 		delete_msgq(app->qid);
 		if (errno) log_error("MSG_RMID");
 		remove(KEY_FILE);
@@ -74,7 +74,7 @@ inline static void loop(t_app *app) {
 		else if (errno && errno != EAGAIN) log_error("sem");
 		if (!app->shared->has_ui) {
 			app->shared->has_ui = 1;
-			ft_putstr("creating UI\n");
+			ft_logstr(DEBUG, "creating UI\n");
 			ui_start(app);
 			stop_sem = NULL;
 		}
@@ -107,7 +107,7 @@ inline static char init_key(void) {
 	if (errno) {
 		if (errno == ENOENT) {
 			errno = 0;
-			ft_putstr("keyfile not found, creating it...\n");
+			ft_logstr(DEBUG, "keyfile not found, creating it...\n");
 			int fd = creat(KEY_FILE, S_IREAD | S_IWRITE);
 			if (errno) log_error("creat");
 			close(fd);
@@ -177,12 +177,12 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (is_first) {
-		ft_putnbr_in_between("created shared memory ", app.shared->shm_id, "\n");
-		ft_putnbr_in_between("created msgq ", app.qid, "\n");
+		ft_lognbr_in_between(DEBUG, "created shared memory ", app.shared->shm_id, "\n", 0);
+		ft_lognbr_in_between(DEBUG, "created msgq ", app.qid, "\n", 0);
 	}
 	else {
-		ft_putnbr_in_between("got shared memory ", app.shared->shm_id, "\n");
-		ft_putnbr_in_between("got msgq ", app.qid, "\n");
+		ft_lognbr_in_between(DEBUG, "got shared memory ", app.shared->shm_id, "\n", 0);
+		ft_lognbr_in_between(DEBUG, "got msgq ", app.qid, "\n", 0);
 	}
 
 	sem_init(&app.stop_sem, 0, 0);
@@ -191,7 +191,7 @@ int main(int argc, char *argv[]) {
 
 	unsigned long nattch = get_shmem_nattch(app.shared->shm_id);
 	if (errno) log_and_quit(&app, "nattch");
-	ft_putnbr_in_between("", (long)nattch, " process(es) attached\n");
+	ft_lognbr_in_between(INFO, "", (long)nattch, " process(es) attached\n", 0);
 
 	setup_sigs();
 	if (errno) log_and_quit(&app, "sigs");

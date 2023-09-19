@@ -8,8 +8,13 @@
 # include <string.h>
 # include <errno.h>
 # include <stdlib.h>
+#include <stdio.h>
 
-# include <ft_print.h>
+# include <ft_log.h>
+
+# ifndef PROGRAM_NAME
+#  define PROGRAM_NAME ""
+# endif
 
 void log_error(char *);
 void panic(char *);

@@ -10,12 +10,14 @@ include_directories(./pkg/ft_error)
 include_directories(./pkg/ft_print)
 include_directories(./pkg/ft_string)
 include_directories(./pkg/ft_memory)
+include_directories(./pkg/ft_log)
 
 set(SOURCE_LEM_IPC
 		pkg/ft_print/ft_putchar.c
 		pkg/ft_print/ft_putstr.c
 		pkg/ft_print/ft_putnbr_base_padded.c
 		pkg/ft_print/ft_putnbr_base.c
+		pkg/ft_print/ft_putnbr_in_between.c
 		pkg/ft_print/ft_putnbr.c
 		pkg/ft_print/ft_print.h
 
@@ -41,6 +43,12 @@ set(SOURCE_LEM_IPC
 		pkg/ft_string/string.c
 		pkg/ft_string/ft_string.h
 
+		pkg/ft_log/print_level.c
+		pkg/ft_log/ft_logstr.c
+		pkg/ft_log/ft_lognbr.c
+		pkg/ft_log/ft_lognbr_in_between.c
+		pkg/ft_log/ft_log.h
+
 		pkg/minilibx-linux/mlx.h
 
 		cmd/main.c
@@ -52,7 +60,6 @@ set(SOURCE_LEM_IPC
 		cmd/lemipc.h
 		cmd/game.h
 		cmd/msgq.c
-		pkg/ft_print/ft_putnbr_in_between.c
 )
 
 add_executable(lemipc ${SOURCE_LEM_IPC})
